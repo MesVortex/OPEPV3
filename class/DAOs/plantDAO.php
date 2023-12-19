@@ -1,7 +1,8 @@
 <?php
 
-require_once "./class/dbConnect.php";
-require_once "./class/plant.php";
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/dbConnect.php');
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/plant.php');
+
 
 class PlantDAO {
   private $DbConnect;
@@ -49,4 +50,32 @@ class PlantDAO {
     }
     return $plants;
   }
+
+  public function addPlant($newPlant) {
+    $fileName = $newPlant->getIMG();
+    $folder = './assets/imgs/' . $fileName;
+    $fileTmp = $newPlant->getQuantity();
+    $plantName = $newPlant->getName();
+    $plantPrice = $newPlant->getPrice();
+    $plantCategory = $newPlant->getCategoryID();
+    $query = "INSERT INTO plants(plant_name, plant_img , plant_price, category_id) VALUES(:plantName, :plantIMG, :plantPrice, :plantCategory)";
+    $stmt = $this->DbConnect->prepare($query);
+    if ($stmt) {
+      $stmt->bindParam(":plantName", $plantName);
+      $stmt->bindParam(":plantIMG", $fileName);
+      $stmt->bindParam(":plantPrice", $plantPrice);
+      $stmt->bindParam(":plantCategory", $plantCategory);
+      $stmt->execute();
+      move_uploaded_file($fileTmp,$folder);
+    }
+  }
+
+  public function deletePlant($plant) {
+    $plantID = $plant->getID();
+    $query = "DELETE FROM plants WHERE plant_id = :plantID";
+    $stmt = $this->DbConnect->prepare($query);
+    $stmt->bindParam(":plantID", $plantID);
+    $stmt->execute();
+  }
+  
 }

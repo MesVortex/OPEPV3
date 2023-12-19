@@ -25,39 +25,39 @@ handleCategory();
 
 // $categories = getAll();
 
-function handlePlant()
-{
-  if (isset($_POST["addPlant"])) {
-    $data = [
-      "plant_name" => trim($_POST['plant_name']),
-      "plant_img" => $_FILES['plant_img']['name'],
-      "plant_price" => trim($_POST['plant_price']),
-      "category_id" => $_POST['category_id'],
-    ];
-    addP($data);
-  } else if (isset($_POST["deletePlant"])) {
-    deleteP($_POST["plant_id"]);
-  }
-}
-handlePlant();
+// function handlePlant()
+// {
+//   if (isset($_POST["addPlant"])) {
+//     $data = [
+//       "plant_name" => trim($_POST['plant_name']),
+//       "plant_img" => $_FILES['plant_img']['name'],
+//       "plant_price" => trim($_POST['plant_price']),
+//       "category_id" => $_POST['category_id'],
+//     ];
+//     addP($data);
+//   } else if (isset($_POST["deletePlant"])) {
+//     deleteP($_POST["plant_id"]);
+//   }
+// }
+// handlePlant();
 
 // $plants = getAllP();
 $plantsObj = new PlantDAO();
 $categoryObj = new CategoryDAO();
 
 
-function adminLogout() {
-  if (isset($_POST["logout"])) {
+// function adminLogout() {
+//   if (isset($_POST["logout"])) {
    
-    if (logout()) {
-      // die("here");
-      header("Location: index.php");
-    }
-  }
-}
+//     if (logout()) {
+//       // die("here");
+//       header("Location: index.php");
+//     }
+//   }
+// }
 
-adminLogout();
-?>
+// adminLogout();
+// ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -129,7 +129,7 @@ adminLogout();
           </a>
         </li>
         <li>
-          <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" >
+          <form method="post" action="./includes/logout.php" >
             <span class="icon">
               <ion-icon name="log-out-outline"></ion-icon>
             </span>
@@ -256,7 +256,7 @@ adminLogout();
             <a href="#" class="btn" onclick="openPopupP()">Add Plant</a>
           </div>
           <div id="plantPopup" class="popup">
-            <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data">
+            <form class="popup-content" action="./includes/addPlant.php" method="POST" enctype="multipart/form-data">
               <span class="close" onclick="closePopupP()">&times;</span>
               <label for="plantName">Plant Name:</label>
               <input type="text" id="plantName" name="plant_name">
@@ -295,7 +295,7 @@ adminLogout();
                   <td><?php echo $plant->getPrice(); ?>$</td>
                   <td><?php echo $plant->getCategoryID(); ?></td>
                   <td>
-                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                    <form action="./includes/deletePlant.php" method="post">
                       <input name="plant_id" type="hidden" value="<?php echo $plant->getID(); ?>">
                       <button name="deletePlant" class="btn bred" type="submit">Delete</button>
                     </form>
