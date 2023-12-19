@@ -1,64 +1,19 @@
 <?php
 session_start();
+
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/DAOs/plantDAO.php');
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/DAOs/cartDAO.php');
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/DAOs/categoryDAO.php');
+
 if (isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id"]) && $_SESSION["role_id"] == 2) {
-  header("Location: dashboard.php");
-}
-require_once('./app/funcs/plant.php');
-require_once('./app/funcs/cart.php');
-require_once("./app/funcs/category.php");
-require_once('./app/funcs/logout.php');
-
-$categories = getAll();
-
-$plants = getPlants();
-
-$cartItems = cartShow();
-
-function addPlantToCart()
-{
-
-  if (isset($_POST["add"])) {
-    if (addToCart($_POST["plant_id"])) {
-      header('Location: home.php');
-    } else {
-      die('failed');
-    }
-  }
+  header("Location: dashboard.php");
+}else if(!$_SESSION["logged"]){
+  header("Location: index.php");
 }
 
-addPlantToCart();
-
-
-
-
-function clientLogout()
-{
-  if (isset($_POST["logout"])) {
-
-    if (logout()) {
-      // die("here");
-      header("Location: index.php");
-    }
-  }
-}
-
-clientLogout();
-
-function orderItems()
-{
-  if (isset($_POST["order"])) {
-    if(order()) {
-      header("Location: home.php");
-    }
-  } else if (isset($_POST["clear"])) {
-    if(deleteAllPlantsInCart()) {
-      header("Location: home.php");
-    }
-  }
-}
-
-orderItems();
-
+$categoryObj = new CategoryDAO();
+$plantsObj = new PlantDAO();
+$cartObj = new cartDAO();
 
 
 ?>
@@ -85,7 +40,7 @@ orderItems();
       referrerpolicy="no-referrer"
     >
 
-  <title>Home </title>
+  <title>Home</title>
 </head>
 
 <body>
@@ -121,7 +76,7 @@ orderItems();
           </li>
           <!-- log out -->
           <li>
-            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <form method="post" action="./includes/logout.php">
               <button type="submit" name="logout" class="button--flex navbar__button">
                 <i class="ri-logout-box-r-line"></i>
               </button>
@@ -140,20 +95,23 @@ orderItems();
         <img class="logo" src="./assets/imgs/logoW.png" alt="">
         <h1>Your Plants</h1>
         <ul class="cartItemsList">
-          <?php
-          foreach ($cartItems as $cartItem) { ?>
+          <?php 
+            $cart = $cartObj->cartShow($_SESSION["user_id"]);
+            $cartItems = $cart->getPlants();
+            foreach ($cartItems as $cartItem) {
+          ?>
             <li>
               <div class="pic">
-                <img src="./assets/imgs/<?php echo $cartItem["plant_img"]; ?>" alt="">
+                <img src="./assets/imgs/<?php echo $cartItem->getIMG(); ?>" alt="">
               </div>
               <div class="info">
-                <p><?php echo $cartItem["plant_name"]; ?></p>
+                <p><?php echo $cartItem->getName(); ?></p>
               </div>
               <div class="price">
-                <p><?php echo $cartItem["plant_price"] ?>$</p>
+                <p><?php echo $cartItem->getPrice(); ?>$</p>
               </div>
               <div class="removePlant">
-                <p><?php echo $cartItem["quantity"]; ?></p>
+                <p><?php echo $cartItem->getQuantity(); ?></p>
               </div>
             </li>
           <?php
@@ -163,11 +121,14 @@ orderItems();
 
         </ul>
         <div class="check-out">
-          <div class="total"><?php echo calculateTotalAmount($_SESSION["user_id"]); ?> $</div>
+          <div class="total"><?php echo $cartObj->calculateTotalAmount(); ?> $</div>
 
-          <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <button type="submit" name="clear" class="clear">Clear All</button>
+          <form method="post" action="./includes/checkout.php">
             <button name="order" class="check">Check Out</button>
+          </form>
+
+          <form method="post" action="./includes/clearCart.php">
+            <button type="submit" name="clear" class="clear">Clear All</button>
           </form>
 
         </div>
@@ -206,9 +167,12 @@ orderItems();
       <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="select-container">
         <select class="form-select" name="category_id" id="category">
           <option value="0" selected>Plant Category</option>
-          <?php foreach ($categories as $category) { ?>
-            <option value="<?php echo $category["category_id"]; ?>">
-              <?php echo $category["category_name"]; ?>
+          <?php 
+            $categories = $categoryObj->getAllCategories();
+            foreach ($categories as $category) { 
+          ?>
+            <option value="<?php echo $category->getID(); ?>">
+              <?php echo $category->getName(); ?>
             </option>
           <?php } ?>
         </select>
@@ -219,17 +183,25 @@ orderItems();
       </form>
       <div class="product__container grid">
 
-        <?php foreach ($plants as $plant) {
+        <?php 
+          if(isset($_POST["category_id"])) {
+            $plants = $plantsObj->getPlantsByCategory($_POST["category_id"]);
+          }else if(!empty($_POST["plant_name"])) {
+            $plants = $plantsObj->getPlantsByName($_POST["plant_name"]);
+          }else{
+            $plants = $plantsObj->getAllPlants();
+          }
+          foreach ($plants as $plant) {
         ?>
           <article class="product__card">
             <div class="product__circle"></div>
 
-            <img src="assets/imgs/<?php echo $plant["plant_img"]; ?>" alt="" class="product__img">
+            <img src="assets/imgs/<?php echo $plant->getIMG(); ?>" alt="" class="product__img">
 
-            <h3 class="product__title"><?php echo $plant["plant_name"]; ?></h3>
-            <span class="product__price"><?php echo $plant["plant_price"]; ?>$</span>
-            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-              <input name="plant_id" type="hidden" value="<?php echo $plant["plant_id"]; ?>">
+            <h3 class="product__title"><?php echo $plant->getName(); ?></h3>
+            <span class="product__price"><?php echo $plant->getPrice(); ?>$</span>
+            <form action="./includes/addToCart.php" method="post">
+              <input name="plant_id" type="hidden" value="<?php echo $plant->getID() ?>">
               <button name="add" type="submit" class="button--flex product__button">
                 <i class="ri-shopping-bag-line"></i>
               </button>

@@ -33,7 +33,7 @@ assignRole();
 
 <body>
 
-    <form class="container" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>" id="container">
+    <form class="container" method="POST" action="./includes/roleAssign.php" id="container">
         <div class="radiocont">
           <div class="form-container user">
           <i class="fas fa-user"></i>

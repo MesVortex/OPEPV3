@@ -4,8 +4,10 @@ if(isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id
   header("Location:home.php");
 }
 require_once('./app/config/db.php');
-require_once("./app/funcs/category.php");
-require_once('./app/funcs/plant.php');
+// require_once("./app/funcs/category.php");
+// require_once('./app/funcs/plant.php');
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/DAOs/plantDAO.php');
+require_once ('/xampp/htdocs/brief8/OPEPV3/class/DAOs/categoryDAO.php');
 require_once('./app/funcs/logout.php');
 
 function handleCategory()
@@ -21,7 +23,7 @@ function handleCategory()
 
 handleCategory();
 
-$categories = getAll();
+// $categories = getAll();
 
 function handlePlant()
 {
@@ -39,7 +41,10 @@ function handlePlant()
 }
 handlePlant();
 
-$plants = getAllP();
+// $plants = getAllP();
+$plantsObj = new PlantDAO();
+$categoryObj = new CategoryDAO();
+
 
 function adminLogout() {
   if (isset($_POST["logout"])) {
@@ -215,12 +220,14 @@ adminLogout();
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($categories as $category) {
+              <?php 
+              $categories = $categoryObj->getAllCategories();
+              foreach ($categories as $category) {
               ?>
                 <tr>
-                  <td><?php echo $category["category_name"]; ?></td>
+                  <td><?php echo $category->getName() ?></td>
                   <td class="btns">
-                    <input type="hidden" value="<?php echo $category["category_id"]; ?>">
+                    <input type="hidden" value="<?php echo $category->getID(); ?>">
                   <button name="modifyCategory" class="btn update_btn">Modify</button>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                       <input id="updateCategoryName" name="category_id" type="hidden" value="">
@@ -261,7 +268,7 @@ adminLogout();
               <select name="category_id">
                 <?php foreach ($categories as $category) {
                 ?>
-                  <option value="<?php echo $category["category_id"]; ?>"><?php echo $category["category_name"]; ?></option>
+                  <option value="<?php echo $category->getID(); ?>"><?php echo $category->getName(); ?></option>
                 <?php  } ?>
               </select>
               <button type="submit" name="addPlant">Add</button>
@@ -278,16 +285,18 @@ adminLogout();
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($plants as $plant) {
+              <?php 
+              $plants = $plantsObj->getAllPlants();
+              foreach ($plants as $plant) {
               ?>
                 <tr>
-                  <td><img style="width: 50px;" src="./assets/imgs/<?php echo $plant["plant_img"]; ?>" alt=""></td>
-                  <td><?php echo $plant["plant_name"]; ?></td>
-                  <td><?php echo $plant["plant_price"]; ?>$</td>
-                  <td><?php echo $plant["category_name"]; ?></td>
+                  <td><img style="width: 50px;" src="./assets/imgs/<?php echo $plant->getIMG(); ?>" alt=""></td>
+                  <td><?php echo $plant->getName(); ?></td>
+                  <td><?php echo $plant->getPrice(); ?>$</td>
+                  <td><?php echo $plant->getCategoryID(); ?></td>
                   <td>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-                      <input name="plant_id" type="hidden" value="<?php echo $plant['plant_id']; ?>">
+                      <input name="plant_id" type="hidden" value="<?php echo $plant->getID(); ?>">
                       <button name="deletePlant" class="btn bred" type="submit">Delete</button>
                     </form>
                   </td>

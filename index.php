@@ -7,39 +7,39 @@ if(isset($_SESSION["logged"]) && $_SESSION["logged"] && isset($_SESSION["role_id
         header("Location: dashboard.php");
     }
 }
-require_once('./app/config/db.php');
-require_once('./app/funcs/signup.php');
-require_once('./app/funcs/login.php');
+// require_once('./app/config/db.php');
+// require_once('./app/funcs/signup.php');
+// require_once('./app/funcs/login.php');
 
 
-function register() {
-    if (isset($_POST["signup"])) {
-        $data = [
-            "name" => trim($_POST['name']),
-            "email" => trim($_POST['email']),
-            "password" => trim($_POST['password']),
-        ];
-        if(signup($data)) {
-            header("Location: role.php");
-        }else{
-            die("signup failed");
-        }
-    }else if  (isset ($_POST["login"])){
-       if (login($_POST['email'], $_POST['password'])){
-        if ($_SESSION["role_id"] == 1) {
-            header("Location: home.php");
-        } else if ($_SESSION["role_id"] == 2) {
-            header("Location: dashboard.php");
-        }
-       }else {
-            die("not valid");
-       }
-    }
-}
+// function register() {
+    // if (isset($_POST["signup"])) {
+        // $data = [
+        //     "name" => trim($_POST['name']),
+        //     "email" => trim($_POST['email']),
+        //     "password" => trim($_POST['password']),
+        // ];
+        // if(signup($data)) {
+        //     header("Location: role.php");
+        // }else{
+        //     die("signup failed");
+        // }
+// if  (isset ($_POST["login"])){
+//        if (login($_POST['email'], $_POST['password'])){
+//         if ($_SESSION["role_id"] == 1) {
+//             header("Location: home.php");
+//         } else if ($_SESSION["role_id"] == 2) {
+//             header("Location: dashboard.php");
+//         }
+//        }else {
+//             die("not valid");
+//        }
+//     }
+// }
 
 
-register();
-?>
+// register();
+ ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,7 +56,7 @@ register();
 
     <div class="container" id="container">
         <div class="form-container sign-up">
-            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <form method="post" action="./includes/signUp.php">
                 <h1>Create Account</h1>
                 <div class="inputsdiv">
                   <div>
@@ -66,12 +66,12 @@ register();
 
                     <input name="password" type="password" placeholder="Password">
                   </div>
-                  <button name="signup" type="submit">Sign Up</button>
+                  <button type="submit">Sign Up</button>
               </div>
             </form>
         </div>
         <div class="form-container sign-in">
-            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <form method="post" action="./includes/logIn.php">
                 <h1>Log In</h1>
                 <div class="inputsdiv">
                   <div>
