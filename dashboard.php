@@ -205,7 +205,7 @@ adminLogout();
             <a href="#" class="btn" onclick="openPopupC()">Add Category</a>
           </div>
           <div id="categoryPopup" class="popup">
-            <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+            <form class="popup-content" action="./includes/addCategory.php" method="POST">
               <span class="close" onclick="closePopupC()">&times;</span>
               <label for="categoryName">Category Name:</label>
               <input type="text" id="categoryName" name="categoryName">
@@ -229,8 +229,8 @@ adminLogout();
                   <td class="btns">
                     <input type="hidden" value="<?php echo $category->getID(); ?>">
                   <button name="modifyCategory" class="btn update_btn">Modify</button>
-                    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-                      <input id="updateCategoryName" name="category_id" type="hidden" value="">
+                    <form action="./includes/deleteCategory.php" method="post">
+                      <input id="updateCategoryName" name="category_id" type="hidden" value="<?php echo $category->getID(); ?>">
                       <button name="deleteCategory"  class="btn bred" type="submit">Delete</button>
                     </form>
                     
@@ -239,7 +239,7 @@ adminLogout();
               <?php
               }    ?>
               <div id="modifyPopup" class="popup">
-                      <form class="popup-content" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                      <form class="popup-content" action="./includes/modifyCategory.php" method="POST">
                         <span class="close" onclick="closeModifyPopup()">&times;</span>
                         <label for="categoryName">New Category Name:</label>
                         <input name="updatedCategoryID" id="categoryID" type="hidden" value="">
